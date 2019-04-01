@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Calculating PI</title>
+		<base href='/' />
+		<link rel='stylesheet' href='_css/styles.css' />
+		<script>
+			window.onerror = function() { alert(Array.from(arguments)); };
+			var pi = 0,
+				iterationsRun = 0;
+			var draw = false, tick = function() {
+				if(!running)
+					return;
+				var n = 0;
+				for(var i = 0; i < iterations; i++) {
+					iterationsRun ++;
+					n = 1 / (iterationsRun * iterationsRun);
+					pi += n;
+				}
+				var time = (new Date().getTime() - startTime);
+				out.value = Math.sqrt(pi * 6);
+				outTime.value = time + 'ms';
+				if(n < Math.pow(10, -digits-3)) {
+					running = false;
+					setTimeout(function() {
+						startTime = new Date().getTime();
+						pi = 0;
+						iterationsRun = 0;
+						running = true;
+					}, 2500);
+				}
+			};
+			var out = null,
+				startTime = null,
+				outTime = null,
+				digits = 3,
+				iterations = 10,
+				running = false;
+			window.addEventListener('DOMContentLoaded', function() {
+				out = document.querySelector('#pi');
+				outTime = document.querySelector('#time');
+				out.disabled = true;
+				outTime.disabled = true;
+				document.querySelector('#start').addEventListener('click', function(e) {
+					e.target.disabled = true;
+					document.querySelector('#digits').disabled = true;
+					if(document.querySelector('#digits').value)
+						digits = document.querySelector('#digits').value;
+					else
+						document.querySelector('#digits').value = digits;
+					document.querySelector('#ticks').disabled = true;
+					if(document.querySelector('#ticks').value)
+						iterations = document.querySelector('#ticks').value;
+					else
+						document.querySelector('#ticks').value = iterations;
+					startTime = new Date().getTime();
+					running = true;
+					setInterval(tick);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<canvas class='invisible'></canvas>
+		<h1>Calculate PI</h1>
+		<h2>With the Basel Problem</h2>
+		<p>This will calculate PI using the anwer to the Basel Problem, as seen <a href='https://en.wikipedia.org/wiki/Basel_problem'>here</a>. Solved by Euler, it equates to <code>&pi;^2 / 6</code>, and therefore can be used to calculate digits of PI. Unfortunately, due to the fact that this involves squaring numbers not only in the problem, but the square roots in the answer, it takes a bit of time, however, there is <a href='leibniz-formula'>the Leibniz Formula</a>. It is not only faster, but is also intended to solve for pi! Using a similar method of adding a ton of fractions, though they are increasing odd numbers rather than increasing squares, you can get results easier.</p>
+		<p>The timer will run until the requested digits count has completely stabilized, and speed multiplies the iterations per loop. In this demo, the three does count as a digit, though there will be more (most likely incorrect) digits following it.</p>
+		<input type='button' id='start' value='Start!' />
+		<input type='button' id='disp' value='Toggle Display' disabled />
+		<input type='number' min='1' max='10' id='digits' placeholder='Digits' />
+		<input type='number' min='1' max='50' id='ticks' placeholder='Speed' />
+		<br/>
+		<input type='text' id='pi' placeholder='PI will be here' />
+		<input type='text' id='time' placeholder='Time taken' />
+	</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Calculating PI</title>
+		<base href='/' />
+		<link rel='stylesheet' href='_css/styles.css' />
+		<script>
+			window.onerror = function() { alert(Array.from(arguments)); };
+			var clacks	= 0,
+				boxes	= [];
+			var Box = function(x = 0, w = 0, m = 0, v = 0, z = 0) {
+				this.xPos = x;
+				this.size = w;
+				this.xMin = z;
+				this.mass = m;
+				this.xVel = v;
+				this._arg = [x, w, m, v, z];
+			}, draw = false, tick = function() {
+				if(!running)
+					return;
+				var maxX = 192;
+				if(boxes[0].xVel < boxes[1].xVel && boxes[0].xVel > 0) {
+					running = false;
+					setTimeout(function() {
+						for(var i = 0; i < boxes.length; i++) {
+							boxes[i] = new Box(...boxes[i]._arg);
+							clacks = 0;
+							startTime = new Date().getTime();
+							running = true;
+						}
+					}, 2500);
+				}
+				for(var i = 0; i < ticks; i++) {
+					boxes.forEach(function(b) {
+						b.xPos += b.xVel;
+					});
+					if(boxes[1].xPos < boxes[0].xPos + boxes[0].size) {
+						var v1 = (boxes[0].mass - boxes[1].mass) / 
+								 (boxes[0].mass + boxes[1].mass) * 
+								  boxes[0].xVel + (2 * boxes[1].mass) / 
+								 (boxes[0].mass + boxes[1].mass) * boxes[1].xVel,
+							v2 = (boxes[1].mass - boxes[0].mass) / 
+								 (boxes[1].mass + boxes[0].mass) * 
+								  boxes[1].xVel + (2 * boxes[0].mass) / 
+								 (boxes[1].mass + boxes[0].mass) * boxes[0].xVel;
+						boxes[0].xVel = v1;
+						boxes[1].xVel = v2;
+						clacks ++;
+					}
+					if(boxes[0].xPos < 0) {
+						boxes[0].xVel *= -1;
+						clacks ++;
+					}
+				}
+				if(draw & context != null) {
+					if(canvas.width != window.innerWidth)
+						canvas.width = window.innerWidth;
+					if(canvas.height != window.innerHeight)
+						canvas.height = window.innerHeight;
+					context.clearRect(0, 0, canvas.width, canvas.height);
+					context.save();
+					context.scale(canvas.height / 100, canvas.height / 100);
+					context.fillStyle = '#09F';
+					context.strokeStyle = '#6CF';
+					context.lineWidth = 0.25;
+					boxes.forEach(function(b) {
+						context.fillRect(Math.max(b.xPos, b.xMin), 100 - b.size, b.size, b.size);
+						context.strokeRect(Math.max(b.xPos, b.xMin), 100 - b.size, b.size, b.size);
+					});
+					context.restore();
+				}
+				var time = (new Date().getTime() - startTime);
+				out.value = clacks;
+				outTime.value = time + 'ms';
+			};
+			var canvas = null,
+				context = null,
+				out = null,
+				startTime = null,
+				outTime = null,
+				digits = 3,
+				ticks = 10,
+				running = false;
+			window.addEventListener('DOMContentLoaded', function() {
+				canvas = document.querySelector('canvas');
+				context = canvas.getContext('2d');
+				out = document.querySelector('#pi');
+				outTime = document.querySelector('#time');
+				out.disabled = true;
+				outTime.disabled = true;
+				document.querySelector('#start').addEventListener('click', function(e) {
+					e.target.disabled = true;
+					document.querySelector('#digits').disabled = true;
+					if(document.querySelector('#digits').value)
+						digits = document.querySelector('#digits').value;
+					else
+						document.querySelector('#digits').value = digits;
+					document.querySelector('#ticks').disabled = true;
+					if(document.querySelector('#ticks').value)
+						ticks = document.querySelector('#ticks').value;
+					else
+						document.querySelector('#ticks').value = ticks;
+					boxes.push(new Box(30, 5, 1, 0, 0));
+					boxes.push(new Box(75, 25, Math.pow(100, digits - 1), -1, 5));
+					startTime = new Date().getTime();
+					running = true;
+					setInterval(tick);
+				});
+				document.querySelector('#disp').addEventListener('click', function(e) {
+					canvas.classList.toggle('invisible');
+					draw = !canvas.classList.contains('invisible');
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<canvas class='invisible'></canvas>
+		<h1>Calculate PI</h1>
+		<h2>2-Dimensional Physics Method</h2>
+		<p>This will calculate PI using the 2-Dimensional Physics Method, as seen <a href='https://www.youtube.com/watch?v=HEfHFsfGXjs'>here</a>, which works by emulating a world that has absolutely no friction, a wall of infinite mass, and two boxes. The first box will be stationary at the start of the demo, and the second will have any velocity in that direction. The key thing to getting PI from this is that the second box's mass will be <code>100^(digits - 1)</code> times that of the first one. This is the least efficient, yet probably most entertaining, way of calculating digits.</p>
+		<p>The timer will run until neither box will ever collide again, and speed multiplies the iterations per loop. In this demo, the three does count as a digit, and there is no added digits.</p>
+		<input type='button' id='start' value='Start!' />
+		<input type='button' id='disp' value='Toggle Display' />
+		<input type='number' min='1' max='10' id='digits' placeholder='Digits' />
+		<input type='number' min='1' max='50' id='ticks' placeholder='Speed' />
+		<br/>
+		<input type='text' id='pi' placeholder='PI will be here' />
+		<input type='text' id='time' placeholder='Time taken' />
+	</body>
+</html>
