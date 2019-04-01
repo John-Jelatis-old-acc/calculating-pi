@@ -4,6 +4,19 @@
 		<title>Calculating PI</title>
 		<base href='./' />
 		<link rel='stylesheet' href='_css/styles.css' />
+		<!-- pi logo image -->
+		<link rel='shortcut icon' href='_img/pi-small.png' />
+		<link rel='apple-touch-icon' href='_img/pi-small.png' />
+		<link rel='favicon' href='_img/pi-small.png' />
+		<link rel='icon' href='_img/pi-small.png' />
+		<meta name='twitter:card' content='summary_large_image' />
+		<meta name='twitter:site' content='nothackerdev' />
+		<meta name='twitter:creator' content='nothackerdev' />
+		<meta name='twitter:title' content='Calculate PI' />
+		<meta name='twitter:description' content='I got bored over spring break, so I implemented a few algorithms to calculate PI, even though the precision is minimal' />
+		<meta name='twitter:image' content='_img/pi-large.png' />
+		<meta name='twitter:image:alt' content='Greek Letter PI' />
+		<!-- was that worth it? ehh fuck it -->
 		<script>
 			window.onerror = function() { alert(Array.from(arguments)); };
 		</script>
@@ -13,7 +26,8 @@
 		<h1>Calculate PI</h1>
 		<h2>Algorythm Selection</h2>
 		<p>For fun over the past couple days, I've implemented a couple &pi;-solving algorithms, and for the sake of learning of others, have made a few of those into easy-to-use user interfaces, simply by selecting one of the following demos!</p>
-		<a class='opt' href='basel-problem'>Answer via the Basel Problem</a><br />
+		<a class='opt' href='chudnovsky-formula'>Chudnovsky</a><br />
+		<a class='opt' href='basel-problem'>Basel Problem</a><br />
 		<a class='opt' href='leibniz-formula'>Leibniz Formula</a><br />
 		<a class='opt' href='physics-engine'>Physics Engine</a><br />
 	</body>

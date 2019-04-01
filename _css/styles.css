@@ -9,11 +9,15 @@ br {
 }
 
 /* Setting font */
-h1, h2, p, a, button, input {
+h1, h2, p, a, button, input, textarea {
 	font-family: "Ubuntu";
 }
 code {
+	display: inline-block;
 	font-family: "Ubuntu Mono";
+	max-height: 40vh;
+	overflow-y: scroll;
+	white-space: pre;
 }
 
 /* Headers */
@@ -55,7 +59,7 @@ a.opt::before {
 }
 
 /* Inputs */
-input, button {
+input, button, textarea {
 	background-color: #CCD;
 	background-image: linear-gradient(#CCD, #BBC);
 	border-radius: 4px;
@@ -69,12 +73,12 @@ input, button {
 	top: 0;
 	transition-duration: 0.25s;
 }
-input:hover, button:hover {
+input:hover, button:hover, textarea:hover {
 	box-shadow: 2px 2px;
 	left: 2px;
 	top: 2px;
 }
-input:active, button:active {
+input:active, button:active, textarea:active {
 	background-color: #DDE;
 	background-image: linear-gradient(#DDE, #CCD);
 }

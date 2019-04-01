@@ -17,23 +17,35 @@
 		<meta name='twitter:image' content='_img/pi-large.png' />
 		<meta name='twitter:image:alt' content='Greek Letter PI' />
 		<!-- was that worth it? ehh fuck it -->
+		<script src='_scripts/big.min.js'></script>
 		<script>
 			window.onerror = function() { alert(Array.from(arguments)); };
+			Big.DP = 26;
+			Big.RM = 0;
 			var pi = 0,
 				iterationsRun = 0;
+			var K = new Big('6'),
+				M = new Big('1'),
+				L = new Big('13591409'), 
+				X = new Big('1'),
+				S = new Big('13591409');
 			var draw = false, tick = function() {
 				if(!running)
 					return;
-				var n = 0;
 				for(var i = 0; i < iterations; i++) {
-					iterationsRun ++;
-					n = 1 / (iterationsRun * iterationsRun);
-					pi += n;
+					iterationsRun++;
+					
+					M = (K.pow(3).minus(K.times('16'))).times(M);
+					L = L.plus(new Big('545140134'));
+					X = X.times(new Big('-262537412640768000'));
+					S = S.plus(M.times(L).div(X));
+					K = K.plus('12');
+					pi = new Big('426880').times(new Big('10005').sqrt()).div(S);
 				}
 				var time = (new Date().getTime() - startTime);
-				out.value = Math.sqrt(pi * 6).toFixed(25);
+				out.value = pi.toFixed(25);
 				outTime.value = time + 'ms';
-				if(n < Math.pow(10, -digits-3)) {
+				if(iterationsRun >= totalIterations) {
 					running = false;
 					setTimeout(function() {
 						startTime = new Date().getTime();
@@ -46,7 +58,7 @@
 			var out = null,
 				startTime = null,
 				outTime = null,
-				digits = 3,
+				totalIterations = 3,
 				iterations = 10,
 				running = false;
 			window.addEventListener('DOMContentLoaded', function() {
@@ -56,11 +68,11 @@
 				outTime.disabled = true;
 				document.querySelector('#start').addEventListener('click', function(e) {
 					e.target.disabled = true;
-					document.querySelector('#digits').disabled = true;
-					if(document.querySelector('#digits').value)
-						digits = document.querySelector('#digits').value;
+					document.querySelector('#totalIterations').disabled = true;
+					if(document.querySelector('#totalIterations').value)
+						totalIterations = document.querySelector('#totalIterations').value;
 					else
-						document.querySelector('#digits').value = digits;
+						document.querySelector('#totalIterations').value = totalIterations;
 					document.querySelector('#ticks').disabled = true;
 					if(document.querySelector('#ticks').value)
 						iterations = document.querySelector('#ticks').value;
@@ -76,12 +88,12 @@
 	<body>
 		<canvas class='invisible'></canvas>
 		<h1>Calculate PI</h1>
-		<h2>With the Basel Problem</h2>
-		<p>This will calculate PI using the anwer to the Basel Problem, as seen <a href='https://en.wikipedia.org/wiki/Basel_problem'>here</a>. Solved by Euler, it equates to <code>&pi;^2 / 6</code>, and therefore can be used to calculate digits of PI. Unfortunately, due to the fact that this involves squaring numbers not only in the problem, but the square roots in the answer, it takes a bit of time, however, there is <a href='leibniz-formula'>the Leibniz Formula</a>. It is not only faster, but is also intended to solve for pi! Using a similar method of adding a ton of fractions, though they are increasing odd numbers rather than increasing squares, you can get results easier.</p>
-		<p>The timer will run until the requested digits count has completely stabilized, and speed multiplies the iterations per loop. In this demo, the three does count as a digit, though there will be more (most likely incorrect) digits following it.</p>
+		<h2>With the Chudnovsky Formula</h2>
+		<p>This will calculate PI using the Chudnovsky formula, which is described <a href='https://en.wikipedia.org/wiki/Chudnovsky_algorithm'>here</a> fairly well, and it even comes with pseudocode... Oh, sorry, I'm being told right now that's python, sorry it looked an awful lot like they just wrote plain English. On a more serious note, this is the best PI-calculation algorithm, leaving <a href='.'>the rest</a> in the dust, though my implementation probably could be optimized further.</p>
+		<p>The timer will run until the requested digits count has completely stabilized, and speed multiplies the iterations per loop. In this demo, there isn't a digits limit, rather there is a iterations button. JavaScript's built-in floating point is too inaccurate for me, I really should've used Java, but what's done is done.</p>
 		<input type='button' id='start' value='Start!' />
 		<input type='button' id='disp' value='Toggle Display' disabled />
-		<input type='number' min='1' max='10' id='digits' placeholder='Digits' />
+		<input type='number' min='1' max='10' id='totalIterations' placeholder='Iterations' />
 		<input type='number' min='1' max='50' id='ticks' placeholder='Speed' />
 		<br/>
 		<input type='text' id='pi' placeholder='PI will be here' />
